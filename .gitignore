@@ -5,3 +5,4 @@ data/raw/
 data/processed/
 venv/
 .vscode/
+*.DS_Store
