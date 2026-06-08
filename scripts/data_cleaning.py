@@ -25,10 +25,9 @@ def clean_nav_history() -> pd.DataFrame:
     def _reindex_and_fill(group: pd.DataFrame) -> pd.DataFrame:
         current_amfi_code = group.name
         group = group.sort_values("date")
-        date_index = pd.date_range(group["date"].min(), group["date"].max(), freq="D")
-        group = group.set_index("date").reindex(date_index)
+        date_index = pd.date_range(start=group["date"].min(), end=group["date"].max(), freq="D")
+        group = group.set_index("date").reindex(date_index).ffill()
         group["amfi_code"] = current_amfi_code
-        group["nav"] = group["nav"].ffill()
         group = group.reset_index().rename(columns={"index": "date"})
         return group
 
@@ -107,4 +106,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-

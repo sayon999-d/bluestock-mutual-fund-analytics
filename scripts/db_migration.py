@@ -46,8 +46,24 @@ def load_fact_nav(engine, dim_codes: set[int]) -> None:
 
     nav_df = nav_df.rename(columns={"date": "nav_date"})
     nav_df = nav_df[nav_df["amfi_code"].isin(dim_codes)]
-    nav_df["nav_date"] = nav_df["nav_date"].astype(str)
-    nav_df = nav_df[["amfi_code", "nav_date", "nav"]]
+    nav_df["nav_date"] = pd.to_datetime(nav_df["nav_date"], errors="coerce")
+    nav_df = nav_df.dropna(subset=["amfi_code", "nav_date", "nav"])
+    nav_df = nav_df.sort_values(["amfi_code", "nav_date"])
+
+    def _reindex_and_fill(group: pd.DataFrame) -> pd.DataFrame:
+        amfi_code = group.name
+        date_index = pd.date_range(start=group["nav_date"].min(), end=group["nav_date"].max(), freq="D")
+        group = group.set_index("nav_date").reindex(date_index).ffill()
+        group["amfi_code"] = amfi_code
+        group = group.reset_index().rename(columns={"index": "nav_date"})
+        return group[["amfi_code", "nav_date", "nav"]]
+
+    nav_df = (
+        nav_df.groupby("amfi_code", group_keys=False)
+        .apply(_reindex_and_fill)
+        .reset_index(drop=True)
+    )
+    nav_df["nav_date"] = nav_df["nav_date"].dt.strftime("%Y-%m-%d")
 
     nav_df.to_sql("fact_nav", engine, if_exists="append", index=False)
 
@@ -79,7 +95,7 @@ def main() -> None:
     if DB_PATH.exists():
         DB_PATH.unlink()
 
-    engine = create_engine(f"sqlite:///{DB_PATH}")
+    engine = create_engine(f"sqlite:///{DB_PATH.as_posix()}")
     load_schema(engine)
 
     dim_df = load_dim_fund(engine)
