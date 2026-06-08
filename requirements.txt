@@ -7,4 +7,5 @@ sqlalchemy
 requests
 scipy
 jupyter
-
+streamlit
+plotly
