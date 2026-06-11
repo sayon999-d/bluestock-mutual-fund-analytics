@@ -27,42 +27,77 @@ The main deliverables are:
 
 ## Architecture Workflow
 
-```text
-Raw CSVs / AMFI Inputs / Market Files
-        |
-        v
-scripts/data_ingestion.py
-scripts/data_cleaning.py
-scripts/db_migration.py
-        |
-        v
-SQLite Star Schema
-  - dim_fund
-  - fact_nav
-  - fact_transactions
-        |
-        v
-Analytics Layer
-  - fund_scorecard.csv
-  - alpha_beta.csv
-  - var_cvar_report.csv
-  - cohort_analysis.csv
-  - sip_continuity_report.csv
-  - hhi_report.csv
-        |
-        v
-dashboard/app.py  --->  Streamlit Executive Dashboard
-        |
-        v
-reports/
-  - Dashboard.pdf
-  - 01_industry_overview.pdf
-  - 02_fund_performance.pdf
-  - 03_investor_analytics.pdf
-  - 04_sip_trends.pdf
-  - Final_Report.pdf
-  - Bluestock_MF_Presentation.pptx
-```
+<div align="center">
+  <svg width="1100" height="430" viewBox="0 0 1100 430" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Bluestock mutual fund analytics architecture workflow">
+    <defs>
+      <linearGradient id="navyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#0B1F3A"/>
+        <stop offset="100%" stop-color="#14345C"/>
+      </linearGradient>
+      <linearGradient id="tealGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#1F8A8A"/>
+        <stop offset="100%" stop-color="#2FA6A6"/>
+      </linearGradient>
+      <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+        <feDropShadow dx="0" dy="10" stdDeviation="14" flood-color="#0B1F3A" flood-opacity="0.14"/>
+      </filter>
+      <style>
+        .box-title { font: 700 18px 'Segoe UI', Arial, sans-serif; fill: #0B1F3A; }
+        .box-text { font: 600 13px 'Segoe UI', Arial, sans-serif; fill: #405266; }
+        .box-small { font: 500 12px 'Segoe UI', Arial, sans-serif; fill: #5B6B7A; }
+        .arrow { stroke: #1F8A8A; stroke-width: 4; fill: none; marker-end: url(#arrowHead); }
+        .section { fill: #FFFFFF; stroke: #DCE3EA; stroke-width: 1.5; rx: 18; ry: 18; filter: url(#shadow); }
+        .section-dark { fill: url(#navyGrad); stroke: #0B1F3A; stroke-width: 1.5; rx: 18; ry: 18; filter: url(#shadow); }
+        .section-teal { fill: url(#tealGrad); stroke: #1F8A8A; stroke-width: 1.5; rx: 18; ry: 18; filter: url(#shadow); }
+        .white-title { font: 700 18px 'Segoe UI', Arial, sans-serif; fill: #FFFFFF; }
+        .white-text { font: 600 13px 'Segoe UI', Arial, sans-serif; fill: #EAF4F7; }
+      </style>
+      <marker id="arrowHead" markerWidth="12" markerHeight="12" refX="9" refY="6" orient="auto">
+        <path d="M0,0 L12,6 L0,12 z" fill="#1F8A8A"/>
+      </marker>
+    </defs>
+
+    <rect x="20" y="28" width="1060" height="372" rx="26" fill="#F7FAFC" stroke="#DCE3EA"/>
+    <text x="550" y="62" text-anchor="middle" class="box-title" style="font-size:22px;">Bluestock Mutual Fund Analytics Architecture Workflow</text>
+
+    <rect x="55" y="110" width="195" height="120" class="section-dark"/>
+    <text x="152" y="144" text-anchor="middle" class="white-title">Raw CSV Inputs</text>
+    <text x="152" y="171" text-anchor="middle" class="white-text">AMFI master, NAV, SIP,</text>
+    <text x="152" y="191" text-anchor="middle" class="white-text">holdings, benchmarks</text>
+
+    <rect x="290" y="110" width="225" height="120" class="section"/>
+    <text x="402" y="144" text-anchor="middle" class="box-title">Pandas Validation</text>
+    <text x="402" y="171" text-anchor="middle" class="box-text">Schema checks, type coercion,</text>
+    <text x="402" y="191" text-anchor="middle" class="box-text">duplicate filtering, gap logic</text>
+
+    <rect x="555" y="92" width="280" height="155" class="section-teal"/>
+    <text x="695" y="128" text-anchor="middle" class="white-title">SQLite Relational Star Schema</text>
+    <text x="695" y="157" text-anchor="middle" class="white-text">dim_fund</text>
+    <text x="695" y="178" text-anchor="middle" class="white-text">fact_nav</text>
+    <text x="695" y="199" text-anchor="middle" class="white-text">fact_transactions</text>
+    <text x="695" y="220" text-anchor="middle" class="white-text">fact_performance</text>
+
+    <rect x="875" y="110" width="170" height="120" class="section-dark"/>
+    <text x="960" y="144" text-anchor="middle" class="white-title">Streamlit UI</text>
+    <text x="960" y="171" text-anchor="middle" class="white-text">Interactive pages,</text>
+    <text x="960" y="191" text-anchor="middle" class="white-text">filters, dashboards</text>
+
+    <path d="M250 170 L290 170" class="arrow"/>
+    <path d="M515 170 L555 170" class="arrow"/>
+    <path d="M835 170 L875 170" class="arrow"/>
+
+    <rect x="290" y="265" width="225" height="82" rx="16" fill="#FFFFFF" stroke="#DCE3EA"/>
+    <text x="402" y="297" text-anchor="middle" class="box-title" style="font-size:16px;">Analytics Outputs</text>
+    <text x="402" y="320" text-anchor="middle" class="box-small">scorecard, VaR/CVaR, cohort, HHI</text>
+
+    <rect x="555" y="265" width="280" height="82" rx="16" fill="#FFFFFF" stroke="#DCE3EA"/>
+    <text x="695" y="297" text-anchor="middle" class="box-title" style="font-size:16px;">Data Lineage and Reproducibility</text>
+    <text x="695" y="320" text-anchor="middle" class="box-small">relative paths, ETL scripts, deterministic refresh</text>
+
+    <path d="M402 230 L402 265" class="arrow"/>
+    <path d="M695 247 L695 265" class="arrow"/>
+  </svg>
+</div>
 
 ---
 
@@ -285,108 +320,6 @@ Copy-ready paragraph:
 
 ---
 
-## 12-Slide Deck Storyboard
-
-Target length: 12 slides
-
-### Slide 1. Title
-
-- Title: Bluestock Mutual Fund Analytics
-- Subtitle: Final Capstone Presentation
-- Visual: dashboard hero screenshot
-
-### Slide 2. Business Problem
-
-- Explain the need for an integrated mutual fund analytics platform.
-- Highlight fragmentation in raw data and decision-making.
-- Visual: simple problem statement or funnel graphic.
-
-### Slide 3. Data Architecture
-
-- Show raw CSVs -> ETL -> SQLite -> Streamlit.
-- Mention schema and reproducibility.
-- Visual: ASCII converted to a clean diagram.
-
-### Slide 4. Data Ingestion and Cleaning
-
-- Describe fund master ingestion, NAV continuity filling, and transaction sanitation.
-- Visual: ETL flow chart or pipeline screenshot.
-
-### Slide 5. EDA Highlights
-
-- Summarize NAV, SIP, folio, and AUM insights.
-- Visual: one composite EDA montage or 2-panel chart.
-
-### Slide 6. Performance Analytics
-
-- Describe 3-year CAGR, Sharpe, Sortino, alpha, beta.
-- Visual: scorecard table and benchmark comparison.
-
-### Slide 7. Risk Analytics
-
-- Explain VaR, CVaR, rolling Sharpe, and max drawdown.
-- Visual: rolling Sharpe chart.
-
-### Slide 8. Cohort and Continuity Analysis
-
-- Describe investor cohorts and SIP retention behavior.
-- Visual: cohort summary table or cadence chart.
-
-### Slide 9. HHI and Concentration
-
-- Explain sector concentration and diversification risk.
-- Visual: HHI heatmap or donut chart.
-
-### Slide 10. Streamlit Dashboard Walkthrough
-
-- Show four pages of the app.
-- Highlight interactive filters and print-friendly export mode.
-- Visual: dashboard screenshots.
-
-### Slide 11. Recommendations and Limitations
-
-- Deliver top recommendations.
-- Mention data and platform limitations.
-- Visual: recommendations table.
-
-### Slide 12. Next Steps
-
-- Suggest scheduled refresh, cloud deployment, user authentication, and production monitoring.
-- Visual: roadmap timeline.
-
----
-
-## Markdown Template for the Final Report
-
-Use the following structure in a document editor or notebook export:
-
-```markdown
-# Bluestock Mutual Fund Analytics
-
-## Executive Summary
-<paste summary here>
-
-## Data Ingestion Strategy
-<paste strategy here>
-
-## ETL Pipeline Architecture
-<paste ETL discussion here>
-
-## Advanced Risk Analysis
-<paste risk analysis here>
-
-## Streamlit Interface Walkthrough
-<paste dashboard walkthrough here>
-
-## System Limitations
-<paste limitations here>
-
-## Strategic Investment Recommendations
-<paste recommendations here>
-```
-
----
-
 ## Code Cleaning and Refactoring Checklist
 
 Use this checklist to sanitize all existing scripts:
@@ -423,4 +356,3 @@ streamlit run dashboard/app.py
 - Run notebooks using the VS Code Jupyter extension.
 - Use `Cmd + Shift + P` to switch interpreters if needed.
 - For PDF exports from the dashboard, use the browser print dialog and save pages into `reports/`.
-
