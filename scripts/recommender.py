@@ -121,10 +121,22 @@ def main() -> None:
     )
     parser.add_argument(
         "risk_appetite",
+        nargs="?",
         choices=sorted(VALID_RISK_APPETITES),
+        default=None,
         help="Risk appetite bucket: Low, Moderate, or High",
     )
     args = parser.parse_args()
+
+    if args.risk_appetite is None:
+        for appetite in sorted(VALID_RISK_APPETITES):
+            print(f"\n=== {appetite} Risk Appetite ===")
+            recommendations = recommend_funds(appetite)
+            if recommendations.empty:
+                print(f"No matching schemes found for risk appetite '{appetite}'.")
+            else:
+                print(recommendations.to_string(index=False))
+        return
 
     recommendations = recommend_funds(args.risk_appetite)
     if recommendations.empty:
