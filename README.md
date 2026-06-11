@@ -27,77 +27,44 @@ The main deliverables are:
 
 ## Architecture Workflow
 
-<div align="center">
-  <svg width="1100" height="430" viewBox="0 0 1100 430" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Bluestock mutual fund analytics architecture workflow">
-    <defs>
-      <linearGradient id="navyGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" stop-color="#0B1F3A"/>
-        <stop offset="100%" stop-color="#14345C"/>
-      </linearGradient>
-      <linearGradient id="tealGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" stop-color="#1F8A8A"/>
-        <stop offset="100%" stop-color="#2FA6A6"/>
-      </linearGradient>
-      <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
-        <feDropShadow dx="0" dy="10" stdDeviation="14" flood-color="#0B1F3A" flood-opacity="0.14"/>
-      </filter>
-      <style>
-        .box-title { font: 700 18px 'Segoe UI', Arial, sans-serif; fill: #0B1F3A; }
-        .box-text { font: 600 13px 'Segoe UI', Arial, sans-serif; fill: #405266; }
-        .box-small { font: 500 12px 'Segoe UI', Arial, sans-serif; fill: #5B6B7A; }
-        .arrow { stroke: #1F8A8A; stroke-width: 4; fill: none; marker-end: url(#arrowHead); }
-        .section { fill: #FFFFFF; stroke: #DCE3EA; stroke-width: 1.5; rx: 18; ry: 18; filter: url(#shadow); }
-        .section-dark { fill: url(#navyGrad); stroke: #0B1F3A; stroke-width: 1.5; rx: 18; ry: 18; filter: url(#shadow); }
-        .section-teal { fill: url(#tealGrad); stroke: #1F8A8A; stroke-width: 1.5; rx: 18; ry: 18; filter: url(#shadow); }
-        .white-title { font: 700 18px 'Segoe UI', Arial, sans-serif; fill: #FFFFFF; }
-        .white-text { font: 600 13px 'Segoe UI', Arial, sans-serif; fill: #EAF4F7; }
-      </style>
-      <marker id="arrowHead" markerWidth="12" markerHeight="12" refX="9" refY="6" orient="auto">
-        <path d="M0,0 L12,6 L0,12 z" fill="#1F8A8A"/>
-      </marker>
-    </defs>
+```mermaid
+flowchart LR
+    A[Raw CSV Data Feeds] --> B[Pandas Validation & Ingestion Layer]
+    B --> C[(SQLite Relational Star-Schema Store)]
+    C --> D[Streamlit Interactive Application UI]
+    C --> E[Analytics Outputs]
 
-    <rect x="20" y="28" width="1060" height="372" rx="26" fill="#F7FAFC" stroke="#DCE3EA"/>
-    <text x="550" y="62" text-anchor="middle" class="box-title" style="font-size:22px;">Bluestock Mutual Fund Analytics Architecture Workflow</text>
+    A1[01_fund_master.csv]
+    A2[02_nav_history.csv]
+    A3[08_investor_transactions.csv]
+    A4[09_portfolio_holdings.csv]
+    A5[10_benchmark_indices.csv]
 
-    <rect x="55" y="110" width="195" height="120" class="section-dark"/>
-    <text x="152" y="144" text-anchor="middle" class="white-title">Raw CSV Inputs</text>
-    <text x="152" y="171" text-anchor="middle" class="white-text">AMFI master, NAV, SIP,</text>
-    <text x="152" y="191" text-anchor="middle" class="white-text">holdings, benchmarks</text>
+    A --- A1
+    A --- A2
+    A --- A3
+    A --- A4
+    A --- A5
 
-    <rect x="290" y="110" width="225" height="120" class="section"/>
-    <text x="402" y="144" text-anchor="middle" class="box-title">Pandas Validation</text>
-    <text x="402" y="171" text-anchor="middle" class="box-text">Schema checks, type coercion,</text>
-    <text x="402" y="191" text-anchor="middle" class="box-text">duplicate filtering, gap logic</text>
+    C --- C1[dim_fund]
+    C --- C2[fact_nav]
+    C --- C3[fact_transactions]
+    C --- C4[fact_performance]
 
-    <rect x="555" y="92" width="280" height="155" class="section-teal"/>
-    <text x="695" y="128" text-anchor="middle" class="white-title">SQLite Relational Star Schema</text>
-    <text x="695" y="157" text-anchor="middle" class="white-text">dim_fund</text>
-    <text x="695" y="178" text-anchor="middle" class="white-text">fact_nav</text>
-    <text x="695" y="199" text-anchor="middle" class="white-text">fact_transactions</text>
-    <text x="695" y="220" text-anchor="middle" class="white-text">fact_performance</text>
+    E --- E1[fund_scorecard.csv]
+    E --- E2[var_cvar_report.csv]
+    E --- E3[cohort_analysis.csv]
+    E --- E4[sip_continuity_report.csv]
+    E --- E5[hhi_report.csv]
 
-    <rect x="875" y="110" width="170" height="120" class="section-dark"/>
-    <text x="960" y="144" text-anchor="middle" class="white-title">Streamlit UI</text>
-    <text x="960" y="171" text-anchor="middle" class="white-text">Interactive pages,</text>
-    <text x="960" y="191" text-anchor="middle" class="white-text">filters, dashboards</text>
+    classDef navy fill:#0B1F3A,color:#FFFFFF,stroke:#0B1F3A,stroke-width:1px;
+    classDef teal fill:#1F8A8A,color:#FFFFFF,stroke:#1F8A8A,stroke-width:1px;
+    classDef white fill:#FFFFFF,color:#0B1F3A,stroke:#DCE3EA,stroke-width:1px;
 
-    <path d="M250 170 L290 170" class="arrow"/>
-    <path d="M515 170 L555 170" class="arrow"/>
-    <path d="M835 170 L875 170" class="arrow"/>
-
-    <rect x="290" y="265" width="225" height="82" rx="16" fill="#FFFFFF" stroke="#DCE3EA"/>
-    <text x="402" y="297" text-anchor="middle" class="box-title" style="font-size:16px;">Analytics Outputs</text>
-    <text x="402" y="320" text-anchor="middle" class="box-small">scorecard, VaR/CVaR, cohort, HHI</text>
-
-    <rect x="555" y="265" width="280" height="82" rx="16" fill="#FFFFFF" stroke="#DCE3EA"/>
-    <text x="695" y="297" text-anchor="middle" class="box-title" style="font-size:16px;">Data Lineage and Reproducibility</text>
-    <text x="695" y="320" text-anchor="middle" class="box-small">relative paths, ETL scripts, deterministic refresh</text>
-
-    <path d="M402 230 L402 265" class="arrow"/>
-    <path d="M695 247 L695 265" class="arrow"/>
-  </svg>
-</div>
+    class A,D navy;
+    class B,C,E teal;
+    class A1,A2,A3,A4,A5,C1,C2,C3,C4,E1,E2,E3,E4,E5 white;
+```
 
 ---
 
